@@ -20,11 +20,9 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: "1.5.0" # Match this to your local Terraform version
-<<<<<<< HEAD
         terraform_wrapper: false
-=======
-        
->>>>>>> 3ca8e4d857ffe80df77eb76e014a6fee417d3485
+
+      
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
