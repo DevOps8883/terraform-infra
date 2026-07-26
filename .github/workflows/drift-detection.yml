@@ -1,0 +1,39 @@
+name: "Terraform Drift Detection"
+
+on:
+  schedule:
+    # Runs automatically every day at midnight UTC
+    - cron: '2 2 * * *'
+  workflow_dispatch:
+    # Allows you to click a button in GitHub and trigger the scan manually
+
+jobs:
+  drift-detection:
+    name: "Scan for Infrastructure Drift"
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform Environment
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0" # Match this to your local Terraform version
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1 # Change this to match your infrastructure region
+
+    - name: Initialize Terraform Working Space
+      run: terraform init
+
+    - name: Execute Drift Analysis Scan
+      id: plan
+      run: |
+        # -detailed-exitcode returns exit code 0 if nothing changed, 2 if drift is found, and 1 if it errors out.
+        terraform plan -detailed-exitcode -no-color
+
